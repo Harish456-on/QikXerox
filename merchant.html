@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Merchant Dashboard</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .job { border: 2px solid black; padding: 10px; margin: 10px 0; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+    <h1>🖨️ Qik Xerox Incoming Jobs</h1>
+    <div id="list"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // PASTE THE SAME FIREBASE CONFIG HERE
+        const firebaseConfig = { YOUR_API_KEY_HERE };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const q = query(collection(db, "jobs"), orderBy("time", "desc"));
+        onSnapshot(q, (snapshot) => {
+            const list = document.getElementById('list');
+            list.innerHTML = "";
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                list.innerHTML += `
+                    <div class="job">
+                        <span><strong>${data.fileName}</strong> (${data.copies} copies)</span>
+                        <a href="${data.fileUrl}" target="_blank"><button>Print</button></a>
+                    </div>`;
+            });
+        });
+    </script>
+</body>
+</html>
