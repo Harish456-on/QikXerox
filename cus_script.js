@@ -4,12 +4,12 @@ import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.g
 
 // Your Firebase Config (Copy this from your Firebase Console Project Settings)
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "your-project.firebaseapp.com",
+    projectId: "your-project",
+    storageBucket: "your-project.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -20,7 +20,7 @@ const storage = getStorage(app);
 window.uploadFile = async () => {
     const fileInput = document.getElementById('fileInput');
     const copies = document.getElementById('copyCount').value;
-    
+
     if (fileInput.files.length === 0) return alert("Please select a file!");
     const file = fileInput.files[0];
 

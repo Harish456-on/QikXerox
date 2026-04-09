@@ -6,6 +6,7 @@
         body { font-family: sans-serif; padding: 20px; }
         .job { border: 2px solid black; padding: 10px; margin: 10px 0; display: flex; justify-content: space-between; }
     </style>
+    <script src="merchant.js" defer></script>
 </head>
 <body>
     <h1>🖨️ Qik Xerox Incoming Jobs</h1>
@@ -16,7 +17,7 @@
         import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // PASTE THE SAME FIREBASE CONFIG HERE
-        const firebaseConfig = { YOUR_API_KEY_HERE };
+        const firebaseConfig = { AIzaSyA8X8uekJA7qoxomkm_Fy6dHn_hcvjhI8s };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
