@@ -5,19 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: sans-serif; text-align: center; padding: 20px; background: #FFD700; }
-        .box { background: white; padding: 20px; border-radius: 10px; }
-        input, button { width: 100%; margin: 10px 0; padding: 10px; }
-        button { background: black; color: white; font-weight: bold; }
+        .box { background: white; padding: 20px; border-radius: 10px; max-width: 400px; margin: auto; }
+        input, button { width: 100%; margin: 10px 0; padding: 12px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: black; color: white; font-weight: bold; cursor: pointer; border: none; }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-    <script src="cus_script.js" defer></script>
 </head>
 <body>
     <div class="box">
         <h2>Qik Xerox ⚡</h2>
         <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg">
         <input type="number" id="copies" placeholder="Number of copies" value="1">
-        <button onclick="uploadFile()">Send to Shop</button>
+        <button id="uploadBtn">Send to Shop</button>
         <p id="msg"></p>
     </div>
 
@@ -26,34 +24,57 @@
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // PASTE YOUR FIREBASE CONFIG HERE
-        const firebaseConfig = { AIzaSyA8X8uekJA7qoxomkm_Fy6dHn_hcvjhI8s }; 
+        // REPLACE THESE WITH YOUR ACTUAL FIREBASE DETAILS
+        const firebaseConfig = {
+            apiKey: "AIzaSyA8X8uekJA7qoxomkm_Fy6dHn_hcvjhI8s",
+            authDomain: "qikxerox-71abd.firebaseapp.com",
+            databaseURL: "https://qikxerox-71abd-default-rtdb.firebaseio.com",
+            projectId: "qikxerox-71abd",
+            storageBucket: "qikxerox-71abd.firebasestorage.app",
+            messagingSenderId: "717929745765",
+            appId: "1:717929745765:web:21d6ba08ec93cf7641258c",
+        }; 
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        window.uploadFile = async () => {
-            const file = document.getElementById('fileInput').files[0];
+        // Using Event Listener instead of onclick for better reliability
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
             const copies = document.getElementById('copies').value;
             const msg = document.getElementById('msg');
             
-            if(!file) return alert("Select a file!");
-            msg.innerText = "Uploading...";
+            if(!file) return alert("Please select a file first!");
+            
+            msg.innerText = "🚀 Uploading to shop...";
+            msg.style.color = "blue";
 
-            const sRef = ref(storage, 'jobs/' + file.name);
-            await uploadBytes(sRef, file);
-            const url = await getDownloadURL(sRef);
+            try {
+                // 1. Upload to Storage
+                const sRef = ref(storage, 'jobs/' + Date.now() + "_" + file.name);
+                await uploadBytes(sRef, file);
+                const url = await getDownloadURL(sRef);
 
-            await addDoc(collection(db, "jobs"), {
-                fileUrl: url,
-                fileName: file.name,
-                copies: copies,
-                time: serverTimestamp()
-            });
+                // 2. Save to Firestore
+                await addDoc(collection(db, "jobs"), {
+                    fileUrl: url,
+                    fileName: file.name,
+                    copies: copies,
+                    time: serverTimestamp(),
+                    merchantId: "SHOP_001" // Make sure this matches merchant.html
+                });
 
-            msg.innerText = "✅ Sent to Merchant!";
-        };
+                msg.innerText = "✅ Sent to Merchant!";
+                msg.style.color = "green";
+                fileInput.value = ""; // Clear input
+            } catch (error) {
+                console.error(error);
+                msg.innerText = "❌ Error! Check Firebase Rules.";
+                msg.style.color = "red";
+            }
+        });
     </script>
 </body>
 </html>
